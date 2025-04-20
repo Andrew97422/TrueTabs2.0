@@ -22,7 +22,7 @@ def run_forecast():
     #    return jsonify({"error": "Missing one or more parameters"}), 400
 
     try:
-        prognose.main_process(historical_table_id, historical_view_id, forecast_table_id, forecast_view_id)
+        prognose.main_process(historical_table_id, historical_view_id, forecast_table_id, forecast_view_id, 12)
         return jsonify({"success": True}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500

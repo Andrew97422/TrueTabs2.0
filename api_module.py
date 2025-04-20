@@ -37,6 +37,7 @@ def post_records(table_id, records, view_id, field_key="name"):
     }
     response = requests.post(url, headers=headers, params=params, data=json.dumps(data))
     if response.ok:
+        print(response.json())
         return response.json()
     else:
         raise Exception(f'Failed to post records: {response.status_code} {response.text}')
