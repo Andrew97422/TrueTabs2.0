@@ -7,13 +7,17 @@
 Перед началом работы необходимо установить все зависимости, указанные в файле `requirements.txt`. Для этого выполните следующую команду:
 
 
-```bash\npip install -r requirements.txt\n```
+```bash
+pip install -r requirements.txt
+```
 
 ## Модуль прогнозирования
 
 Для запуска модуля прогнозирования, выполните команду:
 
-```bash\npython app.py\n```
+```bash
+python app.py
+```
 
 После запуска, модуль будет доступен по адресу [http://localhost:5000](http://localhost:5000).
 
