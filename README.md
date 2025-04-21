@@ -27,7 +27,11 @@ python app.py
 
 1. Получите ваш `chat_id`.
 2. Откройте файл `tg_stock_controll.py` и измените значение `chat_id` на ваш полученный идентификатор.
-3. Запустите бота командой:\n\n```bash\npython tg_stock_controll.py\n```
+3. Запустите бота командой:
+
+```bash
+python tg_stock_controll.py
+```
 
 
 ## Примечание
