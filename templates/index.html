@@ -3,67 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forecasting Interface</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <title>Forecast Runner</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Forecast Runner</h1>
+        <button id="fetch-and-forecast-button">Fetch and Forecast Data</button>
+        <button id="submit-forecast-button">Submit Forecast Data</button>
+        <div id="response" class="response"></div>
+    </div>
+
     <script>
-        function submitForm(event) {
-            event.preventDefault();
+        let forecastData = [];
 
-            const formData = new FormData(event.target);
-            const params = new URLSearchParams(formData);
-
-            fetch(`/run-forecast?${params.toString()}`)
+        document.getElementById('fetch-and-forecast-button').addEventListener('click', function() {
+            fetch('/fetch-and-forecast?historical_table_id=dstp2cytHJcQAMDAxH&historical_view_id=viwofal30sRHo')
                 .then(response => response.json())
                 .then(data => {
-                    const resultsDiv = document.getElementById('results');
                     if (data.error) {
-                        resultsDiv.innerHTML = `<pre>Error: ${data.error}</pre>`;
+                        document.getElementById('response').innerText = 'Error: ' + data.error;
                     } else {
-                        const forecastRecords = data.records;
-                        let tableHTML = '<table><tr><th>Date</th><th>Good ID</th><th>Warehouse ID</th><th>Forecast Ordered</th><th>Forecast Shipped</th></tr>';
-                        forecastRecords.forEach(record => {
-                            const fields = record.fields;
-                            const date = fields.date ? new Date(fields.date).toLocaleDateString() : 'N/A';
-                            const idGood = 'id_good' in fields ? fields.id_good : 'N/A';
-                            const idWarehouse = 'id_warehouse' in fields ? fields.id_warehouse : 'N/A';
-                            tableHTML += `<tr>
-                                <td>${date}</td>
-                                <td>${idGood}</td>
-                                <td>${idWarehouse}</td>
-                                <td>${fields.forecast_ordered}</td>
-                                <td>${fields.forecast_shipped}</td>
-                            </tr>`;
-                        });
-                        tableHTML += '</table>';
-                        resultsDiv.innerHTML = tableHTML;
+                        forecastData = data.records;
+                        document.getElementById('response').innerText = 'Forecast data generated successfully!';
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    const resultsDiv = document.getElementById('results');
-                    resultsDiv.innerHTML = '<pre>An error occurred during forecasting.</pre>';
+                    document.getElementById('response').innerText = 'Error: ' + error;
                 });
-        }
+        });
+
+        document.getElementById('submit-forecast-button').addEventListener('click', function() {
+            if (forecastData.length === 0) {
+                document.getElementById('response').innerText = 'No forecast data to submit.';
+                return;
+            }
+
+            fetch('/submit-forecast', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    forecast_table_id: 'dstF8u8naoVHdJEGYc',
+                    forecast_view_id: 'viwka5FrofH19',
+                    forecast_data: forecastData
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').innerText =
+                    data.success ? 'Forecast data submitted successfully!' : 'Error: ' + data.error;
+            })
+            .catch(error => {
+                document.getElementById('response').innerText = 'Error: ' + error;
+            });
+        });
     </script>
-</head>
-<body>
-    <h1>Forecasting Interface</h1>
-    <form onsubmit="submitForm(event)">
-        <label for="historical_table_id">Historical Table ID:</label>
-        <input type="text" id="historical_table_id" name="historical_table_id" required>
-
-        <label for="historical_view_id">Historical View ID:</label>
-        <input type="text" id="historical_view_id" name="historical_view_id" required>
-
-        <label for="forecast_table_id">Forecast Table ID:</label>
-        <input type="text" id="forecast_table_id" name="forecast_table_id" required>
-
-        <label for="forecast_view_id">Forecast View ID:</label>
-        <input type="text" id="forecast_view_id" name="forecast_view_id" required>
-
-        <button type="submit">Run Forecast</button>
-    </form>
-
-    <div id="results"></div>
 </body>
 </html>
